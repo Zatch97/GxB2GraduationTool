@@ -17,11 +17,13 @@ class GXB2GRADUATIONTOOL_API UGXB_Girl_Widget : public UUserWidget
 	GENERATED_BODY()
 
 
+public:
+
+	//Initialize this widget
+	UFUNCTION(BlueprintCallable)
+		void InitializeWidget(UGXB_Girl* _Girl);
+
 protected:
-
-
-	//BeginPlay of UserWidget
-	virtual void NativeConstruct() override;
 
 	//The girl represented by this widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

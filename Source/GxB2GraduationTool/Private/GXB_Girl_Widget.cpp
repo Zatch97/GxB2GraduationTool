@@ -8,14 +8,20 @@
 #include "GXB_BaseLibrary.h"
 #include "GXB_Girl.h"
 
-
-//BeginPlay of UserWidget
-void UGXB_Girl_Widget::NativeConstruct()
+//Initialize this widget
+void UGXB_Girl_Widget::InitializeWidget(UGXB_Girl* _Girl)
 {
-	Super::NativeConstruct();
+	m_Girl = _Girl;
 
-	if (m_Image != nullptr)
+	if (m_Girl != nullptr)
 	{
-		m_Image->SetBrushFromTexture(m_Girl->GetImageTexture());
+		if (m_Image != nullptr)
+		{
+			UTexture2D* image = m_Girl->GetImageTexture();
+			if (image != nullptr)
+			{
+				m_Image->SetBrushFromTexture(image);
+			}
+		}
 	}
 }
