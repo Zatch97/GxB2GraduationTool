@@ -7,6 +7,7 @@
 #include "GXB_BaseLibrary.generated.h"
 
 class UGXB_Girl;
+class UTexture2D;
 
 //Enum representing all of the games Factions
 UENUM(BlueprintType)
@@ -20,33 +21,14 @@ enum class EFaction : uint8
 	LIGHT UMETA(DisplayName = "Light")
 };
 
-//Struct representing a girl item in the inventory ie with it's number possessed
-USTRUCT(BlueprintType)
-struct FGirlItem
-{
-	GENERATED_BODY()
-
-	UGXB_Girl* f_Girl = nullptr;
-	int32 f_CountInInventory = 0;
-	int32 f_CountInShards = 0;
-
-	FGirlItem(){}
-
-	//Get the total count of the girl represented by this item
-	int32 GetTotalCount()
-	{
-		return f_CountInInventory + f_CountInShards;
-	}
-};
-
-
 //Struct representing a specific girl needed for a recipe
 USTRUCT(BlueprintType)
 struct FRecipeGirlRequisite
 {
 	GENERATED_BODY()
 
-	int32 f_GirlIndex = 0;
+	int32 f_GirlId = 0;
+	uint8 f_Rank;
 	int32 f_NumberNeeded = 0;
 
 	FRecipeGirlRequisite(){}
@@ -59,6 +41,7 @@ struct FRecipeFactionRequisite
 	GENERATED_BODY()
 
 	EFaction f_Faction;
+	uint8 f_Rank;
 	int32 f_NumberNeeded = 0;
 
 	FRecipeFactionRequisite(){}
@@ -70,4 +53,6 @@ class GXB2GRADUATIONTOOL_API UGXB_BaseLibrary : public UObject
 {
 	GENERATED_BODY()
 
+public:
+	static UTexture2D* LoadTextureFromBase64(FString _Base64String);
 };

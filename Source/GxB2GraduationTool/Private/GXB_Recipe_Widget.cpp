@@ -12,17 +12,19 @@ bool UGXB_Recipe_Widget::IsRecipePossible()
 {
 	if (m_InventoryReference != nullptr)
 	{
+		//Check the requested girls with index
 		for (int32 i = 0; i < m_GirlRequisites.Num(); i++)
 		{
-			if (m_GirlRequisites[i].f_NumberNeeded > m_InventoryReference->GetGirlCountInInventoryByIndex(m_GirlRequisites[i].f_GirlIndex))
+			if (m_GirlRequisites[i].f_NumberNeeded > m_InventoryReference->GetGirlCountInInventoryByIndexAndRank(m_GirlRequisites[i].f_GirlId, m_GirlRequisites[i].f_Rank))
 			{
 				return false;
 			}
 		}
 
+		//Check the requested girls by faction
 		for (int32 i = 0; i < m_FactionGirlRequisites.Num(); i++)
 		{
-			if (m_FactionGirlRequisites[i].f_NumberNeeded > m_InventoryReference->GetGirlCountInInventoryByFactionExcludingIndexes(m_FactionGirlRequisites[i].f_Faction, GetRequestedGirlsIndexes()))
+			if (m_FactionGirlRequisites[i].f_NumberNeeded > m_InventoryReference->GetGirlCountInInventoryByFactionAndRankExcludingIndexes(m_FactionGirlRequisites[i].f_Faction, m_FactionGirlRequisites[i].f_Rank, GetRequestedGirlsIndexes()))
 			{
 				return false;
 			}
@@ -41,7 +43,7 @@ TArray<int32> UGXB_Recipe_Widget::GetRequestedGirlsIndexes()
 
 	for (int32 i = 0; i < m_GirlRequisites.Num(); i++)
 	{
-		girlsIndexes.Add(m_GirlRequisites[i].f_GirlIndex);
+		girlsIndexes.Add(m_GirlRequisites[i].f_GirlId);
 	}
 
 	return girlsIndexes;

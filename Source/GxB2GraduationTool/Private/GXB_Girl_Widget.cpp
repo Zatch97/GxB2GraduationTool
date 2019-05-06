@@ -21,6 +21,9 @@ void UGXB_Girl_Widget::InitializeWidget(UGXB_Girl* _Girl)
 			if (image != nullptr)
 			{
 				m_Image->SetBrushFromTexture(image);
+				//FBase64
+				//IImageWrapperModule
+					//image->
 			}
 		}
 	}

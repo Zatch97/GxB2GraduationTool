@@ -19,8 +19,11 @@ public:
 	//Get the image texture corresponding to this girl by rank
 	UTexture2D* GetImageTextureByRank(uint8 _Rank);
 
-	//Get this girl's index
-	FORCEINLINE int32 GetGirlIndex() { return m_GirlIndex; }
+	//Get the total count of girls possessed by rank
+	int32 GetTotalCountByRank(uint8 _Rank);
+
+	//Get this girl's id
+	FORCEINLINE int32 GetGirlId() { return m_GirlId; }
 
 	//Get the image texture corresponding to this girl by default rank
 	FORCEINLINE UTexture2D* GetImageTexture() { return GetImageTextureByRank(m_DefaultRank); }
@@ -29,16 +32,20 @@ public:
 	FORCEINLINE EFaction GetFaction() { return m_Faction; }
 
 	//Setters
+	FORCEINLINE void SetGirlId(int32 _GirlId) { m_GirlId = _GirlId; }
 	FORCEINLINE void SetName(FText _Name) { m_Name = _Name; }
 	FORCEINLINE void SetFaction(EFaction _Faction) { m_Faction = _Faction; }
 	FORCEINLINE void SetRanks(TArray<uint8> _PossibleRanks) { m_PossibleRanks = _PossibleRanks; }
 	FORCEINLINE void SetDefaultRank(uint8 _DefaultRank) { m_DefaultRank = _DefaultRank; }
+	FORCEINLINE void SetImagesTextures(TMap<uint8, UTexture2D*> _ImageTextures) { m_ImagesTextures = _ImageTextures; }
 
 protected:
 
-	//The index for this girl
+	/*BEGIN Json saved values*/
+
+	//The id for this girl
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int32 m_GirlIndex = 0;
+		int32 m_GirlId = 0;
 
 	//The Name of this girl
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -58,6 +65,16 @@ protected:
 
 	//The images of this girl depending on it's rank
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TMap<uint8, UTexture2D*> m_ImageTextures;
+		TMap<uint8, UTexture2D*> m_ImagesTextures;
 
+	/*END Json saved values*/
+
+
+	//The number of this girl in inventory depending on it's rank
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<uint8, int32> m_CountInInventory;
+
+	//The number of this girl in shards depending on it's rank
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<uint8, int32> m_CountInShards;
 };
