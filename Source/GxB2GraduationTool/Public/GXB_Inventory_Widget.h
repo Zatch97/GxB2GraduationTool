@@ -48,10 +48,4 @@ protected:
 private:
 	//Initialize the girls list from Save if it exists
 	void InitializeGirlsList();
-
-	//Try to parse the Json file with all the girls
-	bool TryParseJsonFile(FString _JsonFilePath);
-
-	//Parse one girl object
-	void ParseGirlObject(TSharedPtr<FJsonObject> _GirlObject);
 };

@@ -8,6 +8,7 @@
 
 class UEditableTextBox;
 class UComboBoxString;
+class UTexture2D;
 class UGXB_Girl;
 
 UCLASS()
@@ -21,13 +22,17 @@ protected:
 	//Begin play of UserWidget
 	virtual void NativeConstruct() override;
 
-	//On validate button clicked
+	//On save and reset button clicked
 	UFUNCTION(BlueprintCallable)
-		void OnValidateClicked();
+		void OnSaveAndResetClicked();
 
 	//Called when a rank button is clicked to add it to the possible ranks
 	UFUNCTION(BlueprintCallable)
 		void OnRankButtonClicked(uint8 _RankClicked);
+
+	//Called when the image add button is clicked to add it to the images textures
+	UFUNCTION(BlueprintCallable)
+		void OnImageAddButtonClicked();
 
 	//Girl to create
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -41,10 +46,21 @@ protected:
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 		UComboBoxString* m_FactionComboBox = nullptr;
 
-	//The text box to enter the Girls rank
+	//The text box to enter the Girls default rank
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
-		UEditableTextBox* m_RankText = nullptr;
+		UEditableTextBox* m_DefaultRankText = nullptr;
+
+	//The text box to enter the Girls rank for the image
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+		UEditableTextBox* m_RankImageText = nullptr;
+
+	//The text box to enter the Girls image link
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+		UEditableTextBox* m_ImageLinkText = nullptr;
 
 	//The ranks for this girl
 	TArray<uint8> m_PossibleRanks;
+
+	//images textures by rank
+	TMap<uint8, UTexture2D*> m_ImageTextures;
 };

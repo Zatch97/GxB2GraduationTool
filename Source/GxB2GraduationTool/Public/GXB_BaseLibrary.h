@@ -8,6 +8,7 @@
 
 class UGXB_Girl;
 class UTexture2D;
+class FJsonObject;
 
 //Enum representing all of the games Factions
 UENUM(BlueprintType)
@@ -54,5 +55,21 @@ class GXB2GRADUATIONTOOL_API UGXB_BaseLibrary : public UObject
 	GENERATED_BODY()
 
 public:
+	//Load a texture from a Filepath
+	static UTexture2D* LoadTextureFromFile(FString _Filepath);
+
+	//Load a texture from a Base64 String
 	static UTexture2D* LoadTextureFromBase64(FString _Base64String);
+
+	//Load a texture from a Byte buffer
+	static UTexture2D* LoadTextureFromBuffer(TArray<uint8> _BufferData);
+
+	//Parse the Json file with all the girls
+	static TArray<UGXB_Girl*> ParseJsonFile(FString _JsonFilePath);
+
+	//Parse one girl object
+	static UGXB_Girl* ParseGirlObject(TSharedPtr<FJsonObject> _GirlObject);
+
+	//Save the girls in array to a Json file
+	static bool SaveToJson(FString _Filepath, TArray<UGXB_Girl*> _Girls);
 };
