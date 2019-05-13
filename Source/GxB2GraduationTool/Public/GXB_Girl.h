@@ -22,22 +22,27 @@ public:
 	//Get the total count of girls possessed by rank
 	int32 GetTotalCountByRank(uint8 _Rank);
 
-	//Get this girl's id
-	FORCEINLINE int32 GetGirlId() { return m_GirlId; }
 
 	//Get the image texture corresponding to this girl by default rank
-	FORCEINLINE UTexture2D* GetImageTexture() { return GetImageTextureByRank(m_DefaultRank); }
+	FORCEINLINE UTexture2D* GetDefaultTexture() { return GetImageTextureByRank(m_DefaultRank); }
 
-	//Get the faction of this girl
+	//Getters
+	FORCEINLINE int32 GetGirlId() { return m_GirlId; }
+	FORCEINLINE FText GetGirlName() { return m_Name; }
 	FORCEINLINE EFaction GetFaction() { return m_Faction; }
+	FORCEINLINE uint8 GetDefaultRank() { return m_DefaultRank; }
+	FORCEINLINE TArray<uint8> GetPossibleRanks() { return m_PossibleRanks; }
+	FORCEINLINE TMap<uint8, UTexture2D*> GetImagesTextures() { return m_ImagesTextures; }
+	FORCEINLINE TMap<uint8, FString> GetImagesTextures64() { return m_ImagesTextures64; }
 
 	//Setters
 	FORCEINLINE void SetGirlId(int32 _GirlId) { m_GirlId = _GirlId; }
 	FORCEINLINE void SetName(FText _Name) { m_Name = _Name; }
 	FORCEINLINE void SetFaction(EFaction _Faction) { m_Faction = _Faction; }
-	FORCEINLINE void SetRanks(TArray<uint8> _PossibleRanks) { m_PossibleRanks = _PossibleRanks; }
 	FORCEINLINE void SetDefaultRank(uint8 _DefaultRank) { m_DefaultRank = _DefaultRank; }
+	FORCEINLINE void SetRanks(TArray<uint8> _PossibleRanks) { m_PossibleRanks = _PossibleRanks; }
 	FORCEINLINE void SetImagesTextures(TMap<uint8, UTexture2D*> _ImageTextures) { m_ImagesTextures = _ImageTextures; }
+	FORCEINLINE void SetImagesTextures64(TMap<uint8, FString> _ImagesTextures64) { m_ImagesTextures64 = _ImagesTextures64; }
 
 protected:
 
@@ -67,6 +72,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TMap<uint8, UTexture2D*> m_ImagesTextures;
 
+	//The images of this girl depending on it's rank (in Base64)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TMap<uint8, FString> m_ImagesTextures64;
+	
 	/*END Json saved values*/
 
 

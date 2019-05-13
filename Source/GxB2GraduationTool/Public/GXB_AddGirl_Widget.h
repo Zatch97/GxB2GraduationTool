@@ -10,16 +10,21 @@ class UEditableTextBox;
 class UComboBoxString;
 class UTexture2D;
 class UGXB_Girl;
+class UGXB_Inventory_Widget;
 
 UCLASS()
 class GXB2GRADUATIONTOOL_API UGXB_AddGirl_Widget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
+
+	//Initialize the references
+	void InitializeReferences(UGXB_Inventory_Widget* _InventoryReference);
 
 protected:
 
-	//Begin play of UserWidget
+	//Begin Play of UserWidget
 	virtual void NativeConstruct() override;
 
 	//On save and reset button clicked
@@ -37,6 +42,10 @@ protected:
 	//Girl to create
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UGXB_Girl* m_Girl = nullptr;
+
+	//Class of Inventory bp
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UUserWidget> m_InventoryBP = nullptr;
 
 	//The text box to enter the Girls Name
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
@@ -61,6 +70,13 @@ protected:
 	//The ranks for this girl
 	TArray<uint8> m_PossibleRanks;
 
-	//images textures by rank
-	TMap<uint8, UTexture2D*> m_ImageTextures;
+	//Images textures by rank
+	TMap<uint8, UTexture2D*> m_ImagesTextures;
+
+	//Images textures by rank as base64 string
+	TMap<uint8, FString> m_ImagesTextures64;
+
+	//Inventory reference
+	UGXB_Inventory_Widget* m_InventoryReference = nullptr;
+
 };

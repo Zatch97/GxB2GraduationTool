@@ -64,6 +64,15 @@ public:
 	//Load a texture from a Byte buffer
 	static UTexture2D* LoadTextureFromBuffer(TArray<uint8> _BufferData);
 
+	//Make a Base64 String from file
+	static FString MakeBase64FromFile(FString _Filepath);
+
+	//Make a Byte buffer from Texture
+	//static TArray<uint8> MakeBufferFromTexture(UTexture2D* _Texture);
+
+	//Make a Base64 String from Texture
+	//static FString MakeBase64FromTexture(UTexture2D* _Texture);
+
 	//Parse the Json file with all the girls
 	static TArray<UGXB_Girl*> ParseJsonFile(FString _JsonFilePath);
 

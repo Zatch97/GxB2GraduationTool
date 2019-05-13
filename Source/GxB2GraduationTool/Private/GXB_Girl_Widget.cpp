@@ -17,7 +17,7 @@ void UGXB_Girl_Widget::InitializeWidget(UGXB_Girl* _Girl)
 	{
 		if (m_Image != nullptr)
 		{
-			UTexture2D* image = m_Girl->GetImageTexture();
+			UTexture2D* image = m_Girl->GetDefaultTexture();
 			if (image != nullptr)
 			{
 				m_Image->SetBrushFromTexture(image);

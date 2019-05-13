@@ -42,6 +42,16 @@ int32 UGXB_Inventory_Widget::GetGirlCountInInventoryByFactionAndRankExcludingInd
 	return result;
 }
 
+//Add a girl to the inventory
+void UGXB_Inventory_Widget::AddGirlToInventory(UGXB_Girl* _Girl)
+{
+	m_GirlsList.Add(_Girl);
+
+	m_LastExistingIndex = m_LastExistingIndex < _Girl->GetGirlId() ? _Girl->GetGirlId() : m_LastExistingIndex;
+
+	UpdateWidgetDisplay();
+}
+
 //BeginPlay of UserWidget
 void UGXB_Inventory_Widget::NativeConstruct()
 {
@@ -50,13 +60,36 @@ void UGXB_Inventory_Widget::NativeConstruct()
 	InitializeGirlsList();
 }
 
+//Save all the girls to Json
+void UGXB_Inventory_Widget::SaveGirlsToJson()
+{
+	UGXB_BaseLibrary::SaveToJson(FPaths::ProjectContentDir() + "/Resources/test.json", m_GirlsList);
+}
+
 //Initialize the girls list from Save if it exists
 void UGXB_Inventory_Widget::InitializeGirlsList()
 {
-	//@TODO Try get save game, initialize from there, if no save game, try to initialize from Json
-	m_GirlsList = UGXB_BaseLibrary::ParseJsonFile(FPaths::ProjectContentDir() + "/Resources/All_Girls.json");
+	//@TODO Try get save game, initialize from there (to have the number of girls in inventory), if no save game, try to initialize from Json
+	m_GirlsList = UGXB_BaseLibrary::ParseJsonFile(FPaths::ProjectContentDir() + "/Resources/test.json");
+
+	UpdateLastGirlIndex();
+
+	UpdateWidgetDisplay();
+}
+
+//Update the Widget to display all the girls in the list
+void UGXB_Inventory_Widget::UpdateWidgetDisplay()
+{
 	if (m_GirlWidgetBP != nullptr)
 	{
+		//Empty the old widget array
+		for (int32 i = 0; i < m_GirlsWidgetList.Num(); i++)
+		{
+			m_GirlsWidgetList[i]->RemoveFromParent();
+		}
+		m_GirlsWidgetList.Empty();
+
+		//Fill the new array with current girls list
 		for (int32 i = 0; i < m_GirlsList.Num(); i++)
 		{
 			UGXB_Girl_Widget* girlWidget = Cast<UGXB_Girl_Widget>(CreateWidget(this, m_GirlWidgetBP));
@@ -66,6 +99,13 @@ void UGXB_Inventory_Widget::InitializeGirlsList()
 			m_BaseGirlsPanel->AddChild(girlWidget);
 		}
 	}
+}
 
-	UGXB_BaseLibrary::SaveToJson("", TArray<UGXB_Girl*>());
+//Update the last girl index
+void UGXB_Inventory_Widget::UpdateLastGirlIndex()
+{
+	for (int32 i = 0; i < m_GirlsList.Num(); i++)
+	{
+		m_LastExistingIndex = m_LastExistingIndex < m_GirlsList[i]->GetGirlId() ? m_GirlsList[i]->GetGirlId() : m_LastExistingIndex;
+	}
 }

@@ -15,7 +15,7 @@ UCLASS()
 class GXB2GRADUATIONTOOL_API UGXB_Inventory_Widget : public UUserWidget
 {
 	GENERATED_BODY()
-	
+
 
 public:
 
@@ -25,13 +25,20 @@ public:
 
 	//Get the count of girls of the given faction excluding the indexes passed as parameter
 	int32 GetGirlCountInInventoryByFactionAndRankExcludingIndexes(EFaction _Faction, uint8 _Rank, TArray<int32> _RequestedGirlsIndexes);
+
+	//Add a girl to the inventory
+	void AddGirlToInventory(UGXB_Girl* _Girl);
 protected:
 
 	//BeginPlay of UserWidget
 	virtual void NativeConstruct() override;
 
+	//Save all the girls to Json
+	UFUNCTION(BlueprintCallable)
+		void SaveGirlsToJson();
+
 	//The panel to add the girls
-	UPROPERTY(meta=(BindWidgetOptional))
+	UPROPERTY(meta = (BindWidgetOptional))
 		UPanelWidget* m_BaseGirlsPanel = nullptr;
 
 	//The BP for the girls widget
@@ -45,7 +52,14 @@ protected:
 	//Girls widget list
 	TArray<UGXB_Girl_Widget*> m_GirlsWidgetList;
 
+	//The last index used for a girl in the inventory
+	int32 m_LastExistingIndex = 0;
+
 private:
 	//Initialize the girls list from Save if it exists
 	void InitializeGirlsList();
+
+	//Update the Widget to display all the girls in the list
+	void UpdateWidgetDisplay();
+	void UpdateLastGirlIndex();
 };

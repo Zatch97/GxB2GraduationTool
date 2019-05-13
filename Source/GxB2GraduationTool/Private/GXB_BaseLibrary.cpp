@@ -6,12 +6,16 @@
 #include "GXB_Girl.h"
 
 #include "Engine/Texture2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "Base64.h"
+#include "ImageUtils.h"
 #include "ModuleManager.h"
 #include "IImageWrapper.h"
 #include "IImageWrapperModule.h"
 #include "FileHelper.h"
 #include "JsonUtilities.h"
+
+#include "HighResScreenshot.h"
 
 //TESTS OF BASE64 CONVERSION FROM FILEPATH
 
@@ -35,10 +39,12 @@ FFileHelper::LoadFileToString(base64String, *fileNameTest);
 //Load a texture from a Filepath
 UTexture2D* UGXB_BaseLibrary::LoadTextureFromFile(FString _Filepath)
 {
+	/* @USELESS there's a UE function doing this
 	TArray<uint8> bufferData;
 	FFileHelper::LoadFileToArray(bufferData, *_Filepath);
 
-	return LoadTextureFromBuffer(bufferData);
+	return LoadTextureFromBuffer(bufferData);*/
+	return FImageUtils::ImportFileAsTexture2D(_Filepath);
 }
 
 //Load a texture from a Base64 String
@@ -56,6 +62,9 @@ UTexture2D* UGXB_BaseLibrary::LoadTextureFromBuffer(TArray<uint8> _BufferData)
 {
 	UTexture2D* loadedTexture = nullptr;
 
+	return FImageUtils::ImportBufferAsTexture2D(_BufferData);
+
+	/* @USELESS there's a UE function doing this
 	//Load the image wrapper
 	IImageWrapperModule& imageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
 	TSharedPtr<IImageWrapper> imageWrapper = imageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
@@ -79,10 +88,74 @@ UTexture2D* UGXB_BaseLibrary::LoadTextureFromBuffer(TArray<uint8> _BufferData)
 			}
 		}
 	}
-
-	return loadedTexture;
-
+	return loadedTexture;*/
 }
+
+//Make a Base64 String from file
+FString UGXB_BaseLibrary::MakeBase64FromFile(FString _Filepath)
+{
+	TArray<uint8> bufferData;
+
+	FFileHelper::LoadFileToArray(bufferData, *_Filepath);
+
+	return FBase64::Encode(bufferData);
+}
+
+/*
+@INFO it's almost impossible to make a png from a UTexture2D so I'm gonna save my base64 on png load
+
+//Make a Byte buffer from Texture
+TArray<uint8> UGXB_BaseLibrary::MakeBufferFromTexture(UTexture2D* _Texture)
+{
+	UTextureRenderTarget2D *render = new UTextureRenderTarget2D(,);
+	
+	FImageUtils::CompressImageArray(_Texture, );
+	FImageUtils::ExportRenderTarget2DAsPNG
+	
+		
+	//Load the image wrapper
+	IImageWrapperModule& imageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
+	TSharedPtr<IImageWrapper> PNGImageWrapper = imageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
+
+	const FColor* colorArray = static_cast<FColor*>(_Texture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
+	const TArray<uint8> uncompressedBGRA =
+
+	//FMemory::Memcpy(uncompressedBGRA, uncompressedBGRA, textureData.GetBulkDataSize());
+
+	PNGImageWrapper->SetRaw(uncompressedBGRA->GetData(), uncompressedBGRA->Num(), _Texture->GetSurfaceWidth(), _Texture->GetSurfaceWidth(), ERGBFormat::BGRA, 8);
+	_Texture->PlatformData->Mips[0].BulkData.Unlock();
+
+	const TArray<uint8>& PNGData = PNGImageWrapper->GetCompressed(100);
+
+	return PNGData;
+
+	
+	if (PNGImageWrapper.IsValid())
+	{
+		if (PNGImageWrapper->SetCompressed(_BufferData.GetData(), _BufferData.Num()))
+		{
+
+			if (PNGImageWrapper->GetRaw(ERGBFormat::BGRA, 8, uncompressedBGRA))
+			{
+				loadedTexture = UTexture2D::CreateTransient(PNGImageWrapper->GetWidth(), PNGImageWrapper->GetHeight(), PF_B8G8R8A8);
+
+				//Copy texture data
+				void* textureData = loadedTexture->PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE);
+				FMemory::Memcpy(textureData, uncompressedBGRA->GetData(), uncompressedBGRA->Num());
+				loadedTexture->PlatformData->Mips[0].BulkData.Unlock();
+
+				//Update
+				loadedTexture->UpdateResource();
+			}
+		}
+	}
+}
+
+//Make a Base64 String from Texture
+FString UGXB_BaseLibrary::MakeBase64FromTexture(UTexture2D* _Texture)
+{
+	return FBase64::Encode(UGXB_BaseLibrary::MakeBufferFromTexture(_Texture));
+}*/
 
 //Try to parse the Json file with all the girls
 TArray<UGXB_Girl*> UGXB_BaseLibrary::ParseJsonFile(FString _JsonFilePath)
@@ -141,7 +214,10 @@ UGXB_Girl* UGXB_BaseLibrary::ParseGirlObject(TSharedPtr<FJsonObject> _GirlObject
 	for (int32 i = 0; i < imagesTexturesJson.Num(); i++)
 	{
 		TSharedPtr<FJsonObject> imageObject = imagesTexturesJson[i]->AsObject();
-		imagesTextures.Add(imageObject->GetIntegerField("RankKey"), UGXB_BaseLibrary::LoadTextureFromBase64(imageObject->GetStringField("ImageValue")));
+		int rankKey = imageObject->GetIntegerField("RankKey");
+		FString base64String = imageObject->GetStringField("ImageValue");
+
+		imagesTextures.Add(rankKey, UGXB_BaseLibrary::LoadTextureFromBase64(base64String));
 	}
 	newGirl->SetImagesTextures(imagesTextures);
 
@@ -153,16 +229,53 @@ bool UGXB_BaseLibrary::SaveToJson(FString _Filepath, TArray<UGXB_Girl*> _Girls)
 {
 	TSharedPtr<FJsonObject> JsonObject = MakeShareable(new FJsonObject);
 
-	JsonObject->SetStringField("Name", "Super Sword");
-	JsonObject->SetNumberField("Damage", 15);
-	JsonObject->SetNumberField("Weight", 3);
+	TArray<TSharedPtr<FJsonValue>> allGirlsObject;
+	for (UGXB_Girl* girl : _Girls)
+	{
+		//Make new girl object in JsonObject
+		TSharedPtr<FJsonObject> girlJsonObject = MakeShareable(new FJsonObject);
+		girlJsonObject->SetNumberField("GirlId", girl->GetGirlId());
+		girlJsonObject->SetStringField("GirlName", girl->GetGirlName().ToString());
+		girlJsonObject->SetNumberField("Faction", static_cast<int32>(girl->GetFaction()));
+
+		//Serializing possible ranks array
+		TArray<uint8> possibleRanks = girl->GetPossibleRanks();
+		TArray<TSharedPtr<FJsonValue>> possibleRanksJson;
+		for (int32 i = 0; i < possibleRanks.Num(); i++)
+		{
+			possibleRanksJson.Add(MakeShareable(new FJsonValueNumber(possibleRanks[i])));
+		}
+		girlJsonObject->SetArrayField("PossibleRanks", possibleRanksJson);
+
+
+		girlJsonObject->SetNumberField("DefaultRank", girl->GetDefaultRank());
+
+		//Serializing textures array as Base64
+		TMap<uint8, FString> imagesTextures64 = girl->GetImagesTextures64();
+		TArray<TSharedPtr<FJsonValue>> imagesTexturesJson;
+		for (const TPair<uint8, FString> pair : imagesTextures64)
+		{
+			TSharedPtr<FJsonObject> imageObject = MakeShareable(new FJsonObject);
+
+			imageObject->SetNumberField("RankKey", pair.Key);
+			imageObject->SetStringField("ImageValue", pair.Value);
+			
+			imagesTexturesJson.Add(MakeShareable(new FJsonValueObject(imageObject)));
+		}
+		girlJsonObject->SetArrayField("ImagesTextures", imagesTexturesJson);
+
+		//Convert to JsonValue and add to array
+		TSharedPtr<FJsonValue> girlJsonValue = MakeShareable(new FJsonValueObject(girlJsonObject));
+		allGirlsObject.Add(girlJsonValue);
+	}
+
+	JsonObject->SetArrayField("AllGirls", allGirlsObject);
 
 	FString OutputString;
 	TSharedRef< TJsonWriter<TCHAR, TPrettyJsonPrintPolicy<TCHAR>> > Writer = TJsonWriterFactory< TCHAR, TPrettyJsonPrintPolicy<TCHAR> >::Create(&OutputString);
 	FJsonSerializer::Serialize(JsonObject.ToSharedRef(), Writer);
 
-	FString fileNameTest = FPaths::ProjectContentDir() + "/Resources/test.json";
-	FFileHelper::SaveStringToFile(OutputString, *fileNameTest);
+	FFileHelper::SaveStringToFile(OutputString, *_Filepath);
 
 	return false;
 }

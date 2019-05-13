@@ -13,7 +13,7 @@ UTexture2D* UGXB_Girl::GetImageTextureByRank(uint8 _Rank)
 	{
 		return m_ImagesTextures[_Rank];
 	}
-	return  m_ImagesTextures[m_DefaultRank];
+	return nullptr;
 }
 
 //Get the total count of girls possessed by rank
