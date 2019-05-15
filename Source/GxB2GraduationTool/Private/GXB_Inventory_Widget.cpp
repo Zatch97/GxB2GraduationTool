@@ -69,8 +69,9 @@ void UGXB_Inventory_Widget::SaveGirlsToJson()
 //Initialize the girls list from Save if it exists
 void UGXB_Inventory_Widget::InitializeGirlsList()
 {
-	//@TODO Try get save game, initialize from there (to have the number of girls in inventory), if no save game, try to initialize from Json
 	m_GirlsList = UGXB_BaseLibrary::ParseJsonFile(FPaths::ProjectContentDir() + "/Resources/test.json");
+
+	//@TODO Try get save game, initialize the number of girls in inventory from there
 
 	UpdateLastGirlIndex();
 

@@ -19,9 +19,17 @@ public:
 	//Get the image texture corresponding to this girl by rank
 	UTexture2D* GetImageTextureByRank(uint8 _Rank);
 
+	//Get Count in inventory by rank
+	int32 GetCountInInventoryByRank(uint8 _Rank);
+
+	//Get Count in shards by rank
+	int32 GetCountInShardsByRank(uint8 _Rank);
+
 	//Get the total count of girls possessed by rank
 	int32 GetTotalCountByRank(uint8 _Rank);
 
+	//True if the girl has the given rank in it's possible ranks
+	bool IsRank(uint8 _Rank);
 
 	//Get the image texture corresponding to this girl by default rank
 	FORCEINLINE UTexture2D* GetDefaultTexture() { return GetImageTextureByRank(m_DefaultRank); }
