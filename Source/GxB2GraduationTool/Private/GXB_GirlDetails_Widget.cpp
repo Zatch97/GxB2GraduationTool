@@ -54,5 +54,6 @@ void UGXB_GirlDetails_Widget::UpdateDetails()
 		{
 			m_RankInventoryWidgets[i]->UpdateGirlsNumbers(m_CurrentGirl->GetCountInInventoryByRank(currentRank), m_CurrentGirl->GetCountInShardsByRank(currentRank));
 		}
+		m_RankInventoryWidgets[i]->SetVisibility(ESlateVisibility::Visible);
 	}
 }

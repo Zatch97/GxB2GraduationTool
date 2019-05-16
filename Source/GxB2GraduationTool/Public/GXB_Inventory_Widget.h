@@ -8,6 +8,8 @@
 
 class UGXB_Girl;
 class UGXB_Girl_Widget;
+class UGXB_GirlDetails_Widget;
+class UWidgetSwitcher;
 class FJsonObject;
 enum class EFaction : uint8;
 
@@ -28,6 +30,7 @@ public:
 
 	//Add a girl to the inventory
 	void AddGirlToInventory(UGXB_Girl* _Girl);
+
 protected:
 
 	//BeginPlay of UserWidget
@@ -37,9 +40,25 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void SaveGirlsToJson();
 
-	//The panel to add the girls
-	UPROPERTY(meta = (BindWidgetOptional))
+	//On Details clicked on any girl widget
+	UFUNCTION()
+		void OnDetailsClicked(UGXB_Girl* _Girl);
+
+	//The inventory switcher
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+		UWidgetSwitcher* m_InventorySwitcher = nullptr;
+
+	//The tab with the inventory
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+		UWidget* m_BaseInventoryTab = nullptr;
+
+	//The girl details tab
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 		UPanelWidget* m_BaseGirlsPanel = nullptr;
+
+	//The panel to add the girls
+	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
+		UGXB_GirlDetails_Widget* m_GirlDetails_Widget = nullptr;
 
 	//The BP for the girls widget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -61,5 +80,7 @@ private:
 
 	//Update the Widget to display all the girls in the list
 	void UpdateWidgetDisplay();
+
+	//Update the last girl index
 	void UpdateLastGirlIndex();
 };

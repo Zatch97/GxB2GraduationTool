@@ -28,3 +28,9 @@ void UGXB_Girl_Widget::InitializeWidget(UGXB_Girl* _Girl)
 		}
 	}
 }
+
+//On Details button clicked
+void UGXB_Girl_Widget::OnDetailsClicked()
+{
+	m_OnGirlDetailsClickedDelegate.Broadcast(m_Girl);
+}

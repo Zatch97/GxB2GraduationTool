@@ -47,7 +47,7 @@ protected:
 	//Blueprint to instantiate RankinventoyWidget
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TSubclassOf<UGXB_RankInventory_Widget> m_RankInventoryWidgetBP = nullptr;
-
+	   
 	//All the ranks widgets for this girl
 	TArray<UGXB_RankInventory_Widget*> m_RankInventoryWidgets;
 

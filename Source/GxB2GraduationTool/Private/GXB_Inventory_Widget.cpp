@@ -6,9 +6,11 @@
 #include "GXB_BaseLibrary.h"
 #include "GXB_Girl.h"
 #include "GXB_Girl_Widget.h"
+#include "GXB_GirlDetails_Widget.h"
 
 #include "JsonUtilities.h"
 #include "PanelWidget.h"
+#include "WidgetSwitcher.h"
 
 //Get the girl number in the inventory by index
 int32 UGXB_Inventory_Widget::GetGirlCountInInventoryByIndexAndRank(int32 _GirlIndex, uint8 _Rank)
@@ -87,6 +89,7 @@ void UGXB_Inventory_Widget::UpdateWidgetDisplay()
 		for (int32 i = 0; i < m_GirlsWidgetList.Num(); i++)
 		{
 			m_GirlsWidgetList[i]->RemoveFromParent();
+			m_GirlsWidgetList[i]->m_OnGirlDetailsClickedDelegate.Clear();
 		}
 		m_GirlsWidgetList.Empty();
 
@@ -95,6 +98,7 @@ void UGXB_Inventory_Widget::UpdateWidgetDisplay()
 		{
 			UGXB_Girl_Widget* girlWidget = Cast<UGXB_Girl_Widget>(CreateWidget(this, m_GirlWidgetBP));
 			girlWidget->InitializeWidget(m_GirlsList[i]);
+			girlWidget->m_OnGirlDetailsClickedDelegate.AddDynamic(this, &UGXB_Inventory_Widget::OnDetailsClicked);
 
 			m_GirlsWidgetList.Add(girlWidget);
 			m_BaseGirlsPanel->AddChild(girlWidget);
@@ -109,4 +113,11 @@ void UGXB_Inventory_Widget::UpdateLastGirlIndex()
 	{
 		m_LastExistingIndex = m_LastExistingIndex < m_GirlsList[i]->GetGirlId() ? m_GirlsList[i]->GetGirlId() : m_LastExistingIndex;
 	}
+}
+
+//On Details clicked on any girl widget
+void UGXB_Inventory_Widget::OnDetailsClicked(UGXB_Girl* _Girl)
+{
+	m_GirlDetails_Widget->ChangeGirl(_Girl);
+	m_InventorySwitcher->SetActiveWidget(m_GirlDetails_Widget);
 }

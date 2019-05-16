@@ -10,6 +10,7 @@ class UImage;
 class UGXB_Girl;
 enum class EFaction : uint8;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGirlDetailsClicked, UGXB_Girl*, _Girl);
 
 UCLASS()
 class GXB2GRADUATIONTOOL_API UGXB_Girl_Widget : public UUserWidget
@@ -23,6 +24,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void InitializeWidget(UGXB_Girl* _Girl);
 
+	//On Details button clicked
+	UFUNCTION(BlueprintCallable)
+		void OnDetailsClicked();
+
+	//OnGirlDetailsClicked delegate
+	UPROPERTY(BlueprintAssignable)
+		FOnGirlDetailsClicked m_OnGirlDetailsClickedDelegate;
 protected:
 
 	//The girl represented by this widget
@@ -32,6 +40,5 @@ protected:
 	//The image of this girl (@TODO maybe convert to base64 image so that I can save it in xml? Maybe not needed, we'll see)
 	UPROPERTY(BlueprintReadOnly, meta = (BindWidgetOptional))
 		UImage* m_Image = nullptr;
-
 
 };
